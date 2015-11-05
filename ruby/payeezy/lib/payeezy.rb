@@ -68,6 +68,22 @@ module Payeezy
       response
     end
 
+    def get(url, data, headers)
+      rest_resource = RestClient::Resource.new(url)
+      raw_response = response = {}
+      begin
+        raw_response = rest_resource.get data, headers
+        response = parse(raw_response)
+      rescue => e
+        raw_response = e.response
+        response = response_error(raw_response)
+      rescue JSON::ParserError
+        response = json_error(raw_response)
+      end
+
+      response
+    end
+
     def handle_message(response, success)
       if success
         response['transaction_status']
